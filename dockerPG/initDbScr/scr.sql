@@ -7,9 +7,8 @@ CREATE TABLE test.customers (
     last_name VARCHAR(255) NOT NULL
 );
 
-INSERT INTO test.customers (name, last_name) VALUES ('Владислав', 'Шишко');
-INSERT INTO test.customers (name, last_name) VALUES ('Павел', 'Войтович');
-INSERT INTO test.customers (name, last_name) VALUES ('Анатолий', 'Корнеевич');
+INSERT INTO test.customers (name, last_name) VALUES ('Владислав', 'Шишко'),
+('Павел', 'Войтович'), ('Анатолий', 'Корнеевич'), ('Иосиф', 'Карасевич'), ('Евгений', 'Грузинович'), ('Михаил', 'Жмыхович');
 
 
 
@@ -18,11 +17,7 @@ CREATE TABLE test.banks (
     bank_name VARCHAR(255) NOT NULL
 );
 
-INSERT INTO test.banks (bank_name) VALUES ('Alfa bank');
-INSERT INTO test.banks (bank_name) VALUES ('BPS bank');
-INSERT INTO test.banks (bank_name) VALUES ('BNB');
-INSERT INTO test.banks (bank_name) VALUES ('NewLevelBank');
-INSERT INTO test.banks (bank_name) VALUES ('Belarusbank');
+INSERT INTO test.banks (bank_name) VALUES ('Alfa bank'), ('BPS bank'), ('BNB'), ('NewLevelBank'), ('Belarusbank');
 
 
 

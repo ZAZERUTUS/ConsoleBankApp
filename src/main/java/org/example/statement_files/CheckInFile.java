@@ -1,4 +1,4 @@
-package org.example.services;
+package org.example.statement_files;
 
 import org.example.db.DBConnector;
 import org.example.pojo.Account;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import static org.example.db.CRUDAccounts.getAccountById;
 import static org.example.db.CRUDBanks.getBankById;
 
-public class StatementInFileServices {
+public class CheckInFile {
 
 
     protected static final String headerStatement = "|                         Банковский чек                         |";
@@ -32,7 +32,6 @@ public class StatementInFileServices {
         } else {
             check = getStatementForCashInOut(transaction);
         }
-
 
         saveCheckFile(check, transaction.getId());
 
@@ -115,14 +114,6 @@ public class StatementInFileServices {
         return builder.toString();
     }
 
-    private File createFolder() {
-        File folder = new File(System.getProperty("user.dir") + File.separatorChar + "checks");
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        return folder;
-    }
-
     private void saveCheckFile(String check, Integer id) {
         File folder = createFolder();
         File checkFile = new File(folder.getPath() + File.separatorChar + "check_" + id + ".txt");
@@ -131,5 +122,13 @@ public class StatementInFileServices {
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+    private File createFolder() {
+        File folder = new File(System.getProperty("user.dir") + File.separatorChar + "checks");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        return folder;
     }
 }

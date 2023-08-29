@@ -1,7 +1,6 @@
 package org.example.db;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.example.pojo.Account;
 
@@ -10,9 +9,8 @@ import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Класс предназначен для работы с сущностью {@link Account}
@@ -22,6 +20,7 @@ public class CRUDAccounts extends DBConnector{
 
     protected static String queryNotUpdatedPercent = "SELECT * FROM test.accounts WHERE time_created < (CURRENT_DATE) - interval '1' month AND date_part('month', time_last_interest_percent) < date_part('month', CURRENT_DATE)";
     protected static String formatQueryForGetAccountById = "SELECT * FROM test.accounts WHERE id = %s;";
+    protected static String formatQueryForGetAccountsIdByUserId = "SELECT id FROM test.accounts WHERE customer_id = %s;";
     protected static String formatQueryForGetDeleteById = "DELETE FROM test.accounts WHERE id = %s RETURNING id;";
     protected static String formatQueryForUpdateAccount = "UPDATE test.accounts SET balance = %s WHERE id = %s RETURNING id;";
     protected static String formatQueryForAddAccount = "INSERT INTO test.accounts (num, balance, bank_id, customer_id) VALUES ('%s', '%s', %s, %s) RETURNING id;";
@@ -30,6 +29,33 @@ public class CRUDAccounts extends DBConnector{
         return o == null;
     }
 
+    public static synchronized List<Account> getAccountsByUserId(Integer userId) {
+        List<Integer> ids = getAccountsIdByUserId(userId);
+        List<Account> accounts = new ArrayList<>();
+        for (Integer accountId: ids) {
+            accounts.add(getAccountById(accountId));
+        }
+        log.info("Accounts for return - " + accounts);
+        return accounts;
+    }
+
+    @SneakyThrows
+    public static synchronized List<Integer> getAccountsIdByUserId(Integer userId) {
+        List<Integer> accountsId = new ArrayList<>();
+        new DBConnector();
+        Statement statement = getStatementPostgres();
+        ResultSet resultSet = getResultSetBySQLQuery(statement, String.format(formatQueryForGetAccountsIdByUserId, userId));
+        try {
+            if (resultSet.next()) {
+                accountsId.add(resultSet.getInt(1));
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Not fount account in DB with id - " + userId);
+        }
+        closeDbConnection();
+        log.info("Account ids for return - " + accountsId);
+        return accountsId;
+    }
     @SneakyThrows
     public static synchronized Account getAccountById(Integer id) {
         synchronized (DBConnector.class) {
@@ -56,6 +82,8 @@ public class CRUDAccounts extends DBConnector{
             return accountForRet;
         }
     }
+
+
 
     /**
      *

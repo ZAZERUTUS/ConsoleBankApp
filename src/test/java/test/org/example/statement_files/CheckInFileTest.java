@@ -1,13 +1,11 @@
-package test.org.example.services;
+package test.org.example.statement_files;
 
 import lombok.SneakyThrows;
 import org.example.pojo.Account;
 import org.example.pojo.Transaction;
 import org.example.pojo.TypeTransaction;
-import org.example.services.StatementInFileServices;
-import org.example.services.TransferService;
+import org.example.statement_files.CheckInFile;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -15,9 +13,8 @@ import java.math.BigDecimal;
 
 import static org.example.db.CRUDAccounts.*;
 import static org.example.db.CRUDAccounts.deleteAccount;
-import static org.example.db.CRUDTransactions.getTransactionById;
 
-public class StatementInFileServicesTest  {
+public class CheckInFileTest {
 
 
     private static Account account1;
@@ -42,7 +39,7 @@ public class StatementInFileServicesTest  {
     @Test
     @SneakyThrows
     public void testSaveTransferStatement() {
-        StatementInFileServices statementInFileServices = new StatementInFileServices();
+        CheckInFile checkInFile = new CheckInFile();
         Transaction transaction = Transaction.builder()
                 .id(243)
                 .account1Id(account2.id)
@@ -50,7 +47,7 @@ public class StatementInFileServicesTest  {
                 .type(TypeTransaction.TRANSFER)
                 .amountOperation(new BigDecimal("23.44"))
                 .build();
-        statementInFileServices.createStatementByTransaction(transaction);
+        checkInFile.createStatementByTransaction(transaction);
         //todo добавить проверку файла
     }
 }

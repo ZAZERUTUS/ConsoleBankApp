@@ -42,20 +42,7 @@ public class ConfigHandler {
         return (Config) yaml.load(new FileInputStream(configPath.toFile()));
     }
 
-    public void dumpConfig() throws IllegalArgumentException, IllegalAccessException, IOException {
-        dumpConfig(this.config, this.configPath);
-    }
-
-    public void dumpConfig(Config config, Path configPath) throws IllegalArgumentException, IllegalAccessException, IOException {
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        options.setPrettyFlow(true);
-        Yaml yml = new Yaml(options);
-        yml.dump(config, new FileWriter(configPath.toFile()));
-    }
-
     public Config getConfig() {
-        System.out.println(this.config);
         return this.config;
     }
 }
