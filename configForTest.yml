@@ -1,0 +1,18 @@
+nameDb: test
+adminPassword: admin
+adminUser: admin
+hostDb: postgres_container
+portDb: 5432
+percent: 10
+periodVerifyPercentMls: 3000
+#bankConfigs:
+#  Oracle:
+#    allowedHosts: [127.0.0.1]
+#    connectionTimeout: 3
+#    remoteHosts: [192.168.1.152:1521]
+#    retry: 3
+#  Kafka:
+#    allowedHosts: [127.0.0.1]
+#    connectionTimeout: 3
+#    remoteHosts: [192.168.1.153:2181]
+#    retry: 3
