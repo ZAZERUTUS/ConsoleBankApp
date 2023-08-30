@@ -6,6 +6,7 @@ import org.example.console_ui.CashInOutOperationsWorker;
 import org.example.console_ui.TransferOperationWorker;
 import org.example.pojo.*;
 import org.example.services.SchedulingPercentOnAccounts;
+import org.example.statement_files.StatementByUserService;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -18,7 +19,7 @@ public class Main {
 
         TypeTransaction selectedType;
         new SchedulingPercentOnAccounts();
-
+        new StatementByUserService(1).saveStatement();
         while (true) {
 
             try {
@@ -28,10 +29,13 @@ public class Main {
                 } else {
                     new TransferOperationWorker(selectedType).executeOperation();
                 }
+
+
             } catch (CustomBreakException e) {
                 log.error(e);
                 verifyExitFromApp();
             }
+            new StatementByUserService(1).saveStatement();
 
         }
     }

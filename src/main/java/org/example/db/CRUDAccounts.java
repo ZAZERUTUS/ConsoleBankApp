@@ -3,6 +3,7 @@ package org.example.db;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.example.pojo.Account;
+import org.example.pojo.CurrencyType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -46,7 +47,7 @@ public class CRUDAccounts extends DBConnector{
         Statement statement = getStatementPostgres();
         ResultSet resultSet = getResultSetBySQLQuery(statement, String.format(formatQueryForGetAccountsIdByUserId, userId));
         try {
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 accountsId.add(resultSet.getInt(1));
             }
         } catch (NullPointerException e) {
@@ -68,10 +69,11 @@ public class CRUDAccounts extends DBConnector{
                     accountForRet = new Account(resultSet.getInt(1),
                             resultSet.getString(2),
                             resultSet.getBigDecimal(3),
-                            resultSet.getInt(4),
+                            CurrencyType.getTypeByValue(resultSet.getString(4)),
                             resultSet.getInt(5),
-                            resultSet.getTimestamp(6),
-                            resultSet.getTimestamp(7));
+                            resultSet.getInt(6),
+                            resultSet.getTimestamp(7),
+                            resultSet.getTimestamp(8));
                     return accountForRet;
                 }
             } catch (NullPointerException e) {

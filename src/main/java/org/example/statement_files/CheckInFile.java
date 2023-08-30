@@ -33,7 +33,7 @@ public class CheckInFile {
             check = getStatementForCashInOut(transaction);
         }
 
-        saveCheckFile(check, transaction.getId());
+        new TxtFileWriter("checks", check, "check_" + transaction.getId()).saveCheckFile();
 
     }
 
@@ -114,21 +114,5 @@ public class CheckInFile {
         return builder.toString();
     }
 
-    private void saveCheckFile(String check, Integer id) {
-        File folder = createFolder();
-        File checkFile = new File(folder.getPath() + File.separatorChar + "check_" + id + ".txt");
-        try (FileWriter fileWriter = new FileWriter(checkFile)){
-            fileWriter.append(check).flush();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
 
-    private File createFolder() {
-        File folder = new File(System.getProperty("user.dir") + File.separatorChar + "checks");
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        return folder;
-    }
 }

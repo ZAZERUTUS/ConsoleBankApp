@@ -1,5 +1,6 @@
 CREATE SCHEMA test;
 CREATE TYPE operations_type AS ENUM ('CASH_IN', 'CASH_OUT', 'TRANSFER');
+CREATE TYPE currency_type AS ENUM ('BYN', 'RUB', 'EUR');
 
 CREATE TABLE test.customers (
     id SERIAL PRIMARY KEY,
@@ -25,6 +26,7 @@ CREATE TABLE test.accounts (
     id SERIAL PRIMARY KEY,
     num VARCHAR(255) NOT NULL,
     balance FLOAT NOT NULL,
+    currency_account currency_type DEFAULT 'RUB',
     bank_id INT NOT NULL,
     customer_id INT NOT NULL,
     time_created timestamp DEFAULT current_timestamp,

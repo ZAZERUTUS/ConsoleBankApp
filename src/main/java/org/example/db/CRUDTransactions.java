@@ -3,20 +3,51 @@ package org.example.db;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
+import org.example.pojo.Account;
 import org.example.pojo.Transaction;
 import org.example.pojo.TypeTransaction;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Log4j2
 public class CRUDTransactions extends DBConnector {
 
     protected static String formatQueryForGetTransactionById = "SELECT * FROM test.transactions where id = %s;";
+    protected static String formatQueryForGetTransactionsByAccountId = "SELECT id FROM test.transactions WHERE account_id_from = %s or account_id_to = %s;";
 
     protected static String formatQueryForAddTransaction = "INSERT INTO test.transactions (account_id_from, account_id_to, transaction_type, sum_operation) VALUES (%s, %s, '%s', %s) RETURNING id";
 
+    public static synchronized List<Transaction> getTransactionsByUserId(Integer accountId) {
+        List<Integer> ids = getTransactionsIdByAccountId(accountId);
+        List<Transaction> transactions = new ArrayList<>();
+        for (Integer transactionId: ids) {
+            transactions.add(getTransactionById(transactionId));
+        }
+        log.info("Transactions for return - " + transactions);
+        return transactions;
+    }
+
+    @SneakyThrows
+    public static synchronized List<Integer> getTransactionsIdByAccountId(Integer accountId) {
+        List<Integer> accountsId = new ArrayList<>();
+        new DBConnector();
+        Statement statement = getStatementPostgres();
+        ResultSet resultSet = getResultSetBySQLQuery(statement, String.format(formatQueryForGetTransactionsByAccountId, accountId, accountId));
+        try {
+            while (resultSet.next()) {
+                accountsId.add(resultSet.getInt(1));
+            }
+        } catch (NullPointerException e) {
+            System.out.println("Not fount account in DB with id - " + accountId);
+        }
+        closeDbConnection();
+        log.info("Transactions ids for return - " + accountsId);
+        return accountsId;
+    }
 
     @SneakyThrows
     public static synchronized Transaction getTransactionById(Integer id) {
