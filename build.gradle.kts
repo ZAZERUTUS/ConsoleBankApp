@@ -41,6 +41,9 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.8")
     implementation("com.google.guava:guava:r05")
 
+    implementation("com.lowagie:itext:2.1.7")
+
+
 //    implementation("com.itextpdf:itextpdf:5.0.6")
 //    implementation("org.apache.pdfbox:pdfbox:3.0.0")
 }

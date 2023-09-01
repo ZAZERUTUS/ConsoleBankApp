@@ -6,8 +6,6 @@ import org.example.pojo.Bank;
 import org.example.pojo.Transaction;
 import org.example.pojo.TypeTransaction;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import static org.example.db.CRUDAccounts.getAccountById;
@@ -33,7 +31,7 @@ public class CheckInFile {
             check = getStatementForCashInOut(transaction);
         }
 
-        new TxtFileWriter("checks", check, "check_" + transaction.getId()).saveCheckFile();
+        new FileWriterPdfTxt("checks", check, "check_" + transaction.getId()).saveCheckFileTXT();
 
     }
 

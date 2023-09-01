@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.example.pojo.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +17,7 @@ import static org.example.db.CRUDTransactions.getTransactionsByUserId;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class StatementByUserService {
+public class StatementByAccount {
     protected int lenTitleInHeader = 30;
     protected String headerText = "Выписка";
     protected String headerRow = " ".repeat(lenTitleInHeader) + headerText + " ".repeat(lenTitleInHeader);
@@ -28,16 +27,34 @@ public class StatementByUserService {
     protected String column3 = "Сумма     ";
     protected String headerStatement = String.join("|", column1, column2, column3) + "\n";
 
+    protected String nameFolder = "statements";
+
     @NonNull
     protected Integer accountId;
     protected LocalDate fromStatement;
+    @NonNull
     protected ExtensionStatement extensionStatement;
 
     public void saveStatement() {
-        createStatementTXT();
+        String statementContent = createStatementString();
+        FileWriterPdfTxt writer = new FileWriterPdfTxt(nameFolder,
+                statementContent,
+                "statement_" + accountId);
+        switch (extensionStatement) {
+            case TXT -> writer.saveCheckFileTXT();
+            case PDF -> writer.saveStatementPDF();
+            default -> {
+                writer.saveCheckFileTXT();
+                writer.saveStatementPDF();
+            }
+        }
+
+
+
     }
 
-    protected void createStatementTXT() {
+
+    protected String createStatementString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(headerRow).append("\n");
 
@@ -59,9 +76,7 @@ public class StatementByUserService {
             stringBuilder.append(getRowInStatement(transaction, account));
         }
 
-        new TxtFileWriter("statements",
-                stringBuilder.toString(),
-                "statement_" + account.getId()).saveCheckFile();
+        return stringBuilder.toString();
     }
 
     protected String getRowInHeader(String title, String content) {

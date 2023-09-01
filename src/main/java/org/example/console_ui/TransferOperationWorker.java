@@ -27,7 +27,6 @@ public class TransferOperationWorker extends OperationWorker implements CustomWo
 
     @Override
     public Transaction getCurrentTransaction() {
-        System.out.println("43423432234234234234");
         return Transaction.builder()
                 .type(typeTransaction)
                 .account1Id(accountId1)
