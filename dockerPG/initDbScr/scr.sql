@@ -10,10 +10,10 @@ CREATE TABLE test.customers (
 
 INSERT INTO test.customers (name, last_name) VALUES ('Владислав', 'Шишко'),
 ('Павел', 'Войтович'), ('Анатолий', 'Корнеевич'), ('Иосиф', 'Карасевич'), ('Евгений', 'Грузинович'), ('Михаил', 'Жмыхович'),
-('Милана' 'Гусева'), ('Антонина' 'Бессонова'), ('Максим' 'Гончаров'), ('Адам' 'Рожков'), ('Мария' 'Иванова'),
-('Мирослава' 'Белоусова'), ('Андрей' 'Наумов'), ('Даниил' 'Васильев'), ('Лев' 'Ларин'), ('Егор' 'Дроздов'),
-('Елизавета' 'Самойлова'), ('Вероника' 'Михайлова'), ('Дмитрий' 'Миронов'), ('Дмитрий' 'Авдеев'), ('Артём' 'Сергеев'),
-('Нина' 'Лаврентьева'), ('Давид' 'Майоров'), ('Алиса' 'Карасева'), ('Ирина' 'Дмитриева'), ('Степан' 'Сергеев');
+('Милана', 'Гусева'), ('Антонина', 'Бессонова'), ('Максим', 'Гончаров'), ('Адам', 'Рожков'), ('Мария', 'Иванова'),
+('Мирослава', 'Белоусова'), ('Андрей', 'Наумов'), ('Даниил', 'Васильев'), ('Лев', 'Ларин'), ('Егор', 'Дроздов'),
+('Елизавета', 'Самойлова'), ('Вероника', 'Михайлова'), ('Дмитрий' ,'Миронов'), ('Дмитрий', 'Авдеев'), ('Артём', 'Сергеев'),
+('Нина', 'Лаврентьева'), ('Давид', 'Майоров'), ('Алиса', 'Карасева'), ('Ирина', 'Дмитриева'), ('Степан', 'Сергеев');
 
 
 
@@ -66,6 +66,14 @@ INSERT INTO test.accounts (num, balance, bank_id, customer_id, time_created) VAL
 ('fg43g3g34g', '1100', 2, 22, '2021-01-01 12:00:00'), ('43r34r23r2r', '3123', 1, 5, '2021-05-11 12:00:00'),
 ('33243f2f2d', '1470', 2, 16, '2021-01-01 12:00:00'), ('rrf3f3r43f3', '1950', 1, 1, '2021-05-11 12:00:00');
 
+INSERT INTO test.accounts (num, balance, bank_id, customer_id, time_created, time_last_interest_percent) VALUES
+('ewfefwe', '1000', 2, 11, (CURRENT_DATE) - interval '41' day, (CURRENT_DATE) - interval '32' day),
+('ewfefwe', '2000', 4, 10, (CURRENT_DATE) - interval '41' day, (CURRENT_DATE) - interval '32' day),
+('f34f3f34f3', '1700.42', 4, 13, (CURRENT_DATE) - interval '41' day, (CURRENT_DATE) - interval '32' day),
+('vre43f3f3', '1500', 2, 12, (CURRENT_DATE) - interval '41' day, (CURRENT_DATE) - interval '32' day),
+('f3gfc2r4f34f', '19000.22', 2, 14, (CURRENT_DATE) - interval '41' day, (CURRENT_DATE) - interval '32' day),
+('ed23fgvrece', '10000', 2, 14, (CURRENT_DATE) - interval '41' day, (CURRENT_DATE) - interval '32' day);
+
 
 
 CREATE TABLE test.transactions (
@@ -80,7 +88,11 @@ CREATE TABLE test.transactions (
 );
 
 INSERT INTO test.transactions (account_id_from, account_id_to, transaction_type, sum_operation, time_transaction) VALUES
-(1, 2, 'TRANSFER', 23.22, '2023-07-05 12:00:00'), (1, 2, 'TRANSFER', 103.22, '2023-07-15 12:00:00'),
-(1, 2, 'TRANSFER', 13.22, '2023-07-25 12:00:00'), (1, 2, 'TRANSFER', 23.22, '2023-05-05 12:00:00'),
-(2, 1, 'TRANSFER', 233.22, '2023-04-05 12:00:00'), (2, 1, 'TRANSFER', 1003.22, '2022-09-15 12:00:00'),
-(2, 1, 'TRANSFER', 43.22, '2023-03-25 12:00:00'), (2, 1, 'TRANSFER', 73.22, '2023-02-05 12:00:00');
+(1, 2, 'TRANSFER', 23.22, (CURRENT_DATE) - interval '1' day),
+(1, 32, 'TRANSFER', 103.22, (CURRENT_DATE) - interval '1' month),
+(1, 6, 'TRANSFER', 13.22, (CURRENT_DATE) - interval '3' day),
+(1, 27, 'TRANSFER', 23.22, (CURRENT_DATE) - interval '21' day),
+(8, 1, 'TRANSFER', 233.22, (CURRENT_DATE) - interval '4' month),
+(22, 1, 'TRANSFER', 1003.22, (CURRENT_DATE) - interval '1' year),
+(16, 1, 'TRANSFER', 43.22, (CURRENT_DATE) - interval '3' month),
+(29, 1, 'TRANSFER', 73.22, (CURRENT_DATE) - interval '2' month);

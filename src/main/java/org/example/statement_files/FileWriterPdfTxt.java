@@ -24,7 +24,7 @@ public class FileWriterPdfTxt {
             Reader inputString = new StringReader(content);
             BufferedReader reader = new BufferedReader(inputString);
             BufferedReader input = new BufferedReader (reader);
-            Document output = new Document(PageSize.A4);
+            Document output = new Document(PageSize.A3);
             PdfWriter.getInstance(output, new FileOutputStream(pathForSave));
 
             output.open();

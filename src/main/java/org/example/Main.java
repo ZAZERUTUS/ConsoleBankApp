@@ -27,7 +27,7 @@ public class Main {
                     Scanner in = new Scanner(System.in);
                     System.out.print("Введите желаемое расширение выписки\n" +
                             "доступны PDF и TXT при вводе любого другого значения будут сформированы обе выписки: ");
-                    new StatementByAccount(1, ExtensionStatement.getTypeByValue(in.next())).saveStatement();
+                    new StatementByAccount(ExtensionStatement.getTypeByValue(in.next())).saveStatement();
                 }
                 default -> verifyExitFromApp();
             }

@@ -153,6 +153,9 @@ public class CRUDAccounts extends DBConnector{
         synchronized (DBConnector.class) {
             Statement statement = getStatementPostgres();
             ResultSet resultSet = getResultSetBySQLQuery(statement, queryNotUpdatedPercent);
+            if (resultSet == null) {
+                return;
+            }
             while (resultSet.next()) {
                 System.out.println("update account with id - " + resultSet.getString(1));
                 BigDecimal current = resultSet.getBigDecimal(3);
@@ -161,10 +164,10 @@ public class CRUDAccounts extends DBConnector{
                         percent.setScale(2, RoundingMode.HALF_UP).divide(
                                 new BigDecimal(100),
                                 RoundingMode.HALF_UP)
-                                .add(new BigDecimal(1))
-                ).floatValue());
+                                .add(new BigDecimal(1)).setScale(2, RoundingMode.HALF_UP)
+                ).setScale(2, RoundingMode.HALF_UP).floatValue());
                 resultSet.updateRow();
-                resultSet.updateTimestamp(7 , new Timestamp(System.currentTimeMillis()));
+                resultSet.updateTimestamp(8 , new Timestamp(System.currentTimeMillis()));
                 resultSet.updateRow();
             }
         }

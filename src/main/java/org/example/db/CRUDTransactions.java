@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class CRUDTransactions extends DBConnector {
 
     protected static String formatQueryForGetTransactionById = "SELECT * FROM test.transactions where id = %s;";
-    protected static String formatQueryForGetTransactionsByAccountId = "SELECT id FROM test.transactions WHERE account_id_from = %s or account_id_to = %s;";
+    protected static String formatQueryForGetTransactionsByAccountId = "SELECT id FROM test.transactions WHERE account_id_from = %s or account_id_to = %s order by time_transaction desc;";
 
     protected static String formatQueryForAddTransaction = "INSERT INTO test.transactions (account_id_from, account_id_to, transaction_type, sum_operation) VALUES (%s, %s, '%s', %s) RETURNING id";
 

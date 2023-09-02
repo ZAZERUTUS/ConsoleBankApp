@@ -85,7 +85,6 @@ public class OperationWorker implements CustomWorkerInConsole {
     }
 
     protected boolean transferSum(Transaction transaction) {
-        System.out.println("INPUTED - " + transaction);
         Integer idTransaction;
         try {
             if (transaction.getType() == TypeTransaction.TRANSFER) {

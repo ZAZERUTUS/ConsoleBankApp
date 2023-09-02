@@ -3,5 +3,5 @@ adminPassword: admin
 adminUser: admin
 hostDb: postgres_container
 portDb: 5432
-percent: 1
+percent: 20
 periodVerifyPercentMls: 10000
