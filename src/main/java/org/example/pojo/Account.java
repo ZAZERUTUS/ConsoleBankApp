@@ -19,6 +19,8 @@ public class Account {
     public String number;
     @NonNull
     public BigDecimal amount;
+
+    public CurrencyType currencyType;
     @NonNull
     public Integer bankId;
     @NonNull

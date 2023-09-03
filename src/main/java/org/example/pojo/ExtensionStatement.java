@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum ExtensionStatement {
-    PDF, TXT;
+    PDF, TXT, ALL_FORMAT;
 
 
     public static ExtensionStatement getTypeByValue(String value) throws IllegalArgumentException{
@@ -14,6 +14,6 @@ public enum ExtensionStatement {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Not valid extension file");
+        return ALL_FORMAT;
     }
 }
