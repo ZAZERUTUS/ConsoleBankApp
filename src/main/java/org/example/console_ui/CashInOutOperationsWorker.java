@@ -22,7 +22,6 @@ public class CashInOutOperationsWorker extends OperationWorker {
 
     @Override
     public Transaction getCurrentTransaction() {
-        System.out.println("dqwdqwdqwdqwdqwdqwdqwdq");
         return Transaction.builder()
                 .type(typeTransaction)
                 .account1Id(accountId1)

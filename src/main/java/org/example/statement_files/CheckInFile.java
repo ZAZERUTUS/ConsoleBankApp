@@ -1,4 +1,4 @@
-package org.example.services;
+package org.example.statement_files;
 
 import org.example.db.DBConnector;
 import org.example.pojo.Account;
@@ -6,14 +6,12 @@ import org.example.pojo.Bank;
 import org.example.pojo.Transaction;
 import org.example.pojo.TypeTransaction;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 import static org.example.db.CRUDAccounts.getAccountById;
 import static org.example.db.CRUDBanks.getBankById;
 
-public class StatementInFileServices {
+public class CheckInFile {
 
 
     protected static final String headerStatement = "|                         Банковский чек                         |";
@@ -33,8 +31,7 @@ public class StatementInFileServices {
             check = getStatementForCashInOut(transaction);
         }
 
-
-        saveCheckFile(check, transaction.getId());
+        new FileWriterPdfTxt("checks", check, "check_" + transaction.getId()).saveCheckFileTXT();
 
     }
 
@@ -115,21 +112,5 @@ public class StatementInFileServices {
         return builder.toString();
     }
 
-    private File createFolder() {
-        File folder = new File(System.getProperty("user.dir") + File.separatorChar + "checks");
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
-        return folder;
-    }
 
-    private void saveCheckFile(String check, Integer id) {
-        File folder = createFolder();
-        File checkFile = new File(folder.getPath() + File.separatorChar + "check_" + id + ".txt");
-        try (FileWriter fileWriter = new FileWriter(checkFile)){
-            fileWriter.append(check).flush();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
 }

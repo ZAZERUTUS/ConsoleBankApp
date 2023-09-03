@@ -10,6 +10,11 @@ import java.util.TimerTask;
 import static org.example.config.ConfigHandler.getInstanceConfig;
 import static org.example.db.CRUDAccounts.*;
 
+/**
+ * Класс для регулярной проверки начисления процентов по остатку на счёте
+ * Проверяет что разница между текущим месяцем и месяцем последнего зачисления больше 1 и начисляет проценты за 1 мясяц
+ * Если счёт открыт менее месяца назад проценты так же начислены не будут
+ */
 public class SchedulingPercentOnAccounts {
 
     public SchedulingPercentOnAccounts() {

@@ -1,20 +1,17 @@
 package org.example.console_ui;
 
-import lombok.extern.log4j.Log4j;
-
 import lombok.extern.log4j.Log4j2;
 import org.example.CustomBreakException;
 import org.example.pojo.Account;
 import org.example.pojo.Transaction;
 import org.example.pojo.TypeTransaction;
 import org.example.services.CashInAndOutService;
-import org.example.services.StatementInFileServices;
+import org.example.statement_files.CheckInFile;
 import org.example.services.TransferService;
 
 import java.math.BigDecimal;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 import static org.example.db.CRUDAccounts.getAccountById;
 import static org.example.db.CRUDTransactions.getTransactionById;
@@ -88,7 +85,6 @@ public class OperationWorker implements CustomWorkerInConsole {
     }
 
     protected boolean transferSum(Transaction transaction) {
-        System.out.println("INPUTED - " + transaction);
         Integer idTransaction;
         try {
             if (transaction.getType() == TypeTransaction.TRANSFER) {
@@ -97,7 +93,7 @@ public class OperationWorker implements CustomWorkerInConsole {
                 idTransaction = new CashInAndOutService(transaction).transferAndSaveStatementInDB();
             }
             System.out.println("Операция " + transaction.getType().getType() + " успешно совершена");
-            new StatementInFileServices().createStatementByTransaction(getTransactionById(idTransaction));
+            new CheckInFile().createStatementByTransaction(getTransactionById(idTransaction));
             return false;
         } catch (Exception e) {
             log.error(e.getMessage());
