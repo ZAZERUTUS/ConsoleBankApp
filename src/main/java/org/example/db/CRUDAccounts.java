@@ -157,15 +157,15 @@ public class CRUDAccounts extends DBConnector{
                 return;
             }
             while (resultSet.next()) {
-                System.out.println("update account with id - " + resultSet.getString(1));
-                BigDecimal current = resultSet.getBigDecimal(3);
-                resultSet.updateFloat(3, current.multiply(
-
-                        percent.setScale(2, RoundingMode.HALF_UP).divide(
-                                new BigDecimal(100),
-                                RoundingMode.HALF_UP)
-                                .add(new BigDecimal(1)).setScale(2, RoundingMode.HALF_UP)
-                ).setScale(2, RoundingMode.HALF_UP).floatValue());
+                BigDecimal current = resultSet.getBigDecimal(3).setScale(50,RoundingMode.HALF_UP);
+                BigDecimal test = current.multiply(
+                        percent.divide(
+                                        new BigDecimal(100), 20,
+                                        RoundingMode.HALF_UP)
+                                .add(new BigDecimal(1))
+                ).setScale(2, RoundingMode.HALF_UP);
+                //todo - в базу записывает без округления
+                resultSet.updateFloat(3, Float.parseFloat(test.toString()));
                 resultSet.updateRow();
                 resultSet.updateTimestamp(8 , new Timestamp(System.currentTimeMillis()));
                 resultSet.updateRow();

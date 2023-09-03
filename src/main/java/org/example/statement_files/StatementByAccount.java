@@ -18,6 +18,7 @@ import java.util.Scanner;
 import static org.example.db.CRUDAccounts.getAccountById;
 import static org.example.db.CRUDBanks.getBankById;
 import static org.example.db.CRUDCustomers.getCustomerById;
+import static org.example.db.CRUDTransactions.getInAccountByPeriod;
 import static org.example.db.CRUDTransactions.getTransactionsByUserId;
 
 @AllArgsConstructor
@@ -27,15 +28,20 @@ public class StatementByAccount {
     protected String headerText = "Выписка";
     protected String headerRow = " ".repeat(lenTitleInHeader) + headerText + " ".repeat(lenTitleInHeader);
 
+    protected String headerTextMoneyStatement = "Money statement";
+    protected String headerRowMoneyStatement = " ".repeat(lenTitleInHeader) + headerTextMoneyStatement + " ".repeat(lenTitleInHeader);
+
     protected String column1 = "     Дата     ";
     protected String column2 = "             Примечание                                  ";
     protected String column3 = "Сумма     ";
     protected String headerStatement = String.join("|", column1, column2, column3) + "\n";
 
     protected String nameFolder = "statements";
+    protected String nameMoneyStatementFolder = "statement-money,";
 
     protected Integer accountId;
     protected PeriodStatement periodStatement;
+    protected Timestamp startDate;
     @NonNull
     protected ExtensionStatement extensionStatement;
 
@@ -50,6 +56,26 @@ public class StatementByAccount {
         FileWriterPdfTxt writer = new FileWriterPdfTxt(nameFolder,
                 statementContent,
                 "statement_" + accountId);
+        switch (extensionStatement) {
+            case TXT -> writer.saveCheckFileTXT();
+            case PDF -> writer.saveStatementPDF();
+            default -> {
+                writer.saveCheckFileTXT();
+                writer.saveStatementPDF();
+            }
+        }
+    }
+
+    public void saveMoneyStatement() {
+        accountId = selectAccountId();
+        if (accountId == 0) {
+            return;
+        }
+
+        String statementContent = createStatementStringForSumOperation();
+        FileWriterPdfTxt writer = new FileWriterPdfTxt(nameMoneyStatementFolder,
+                statementContent,
+                "money_statement_" + accountId);
         switch (extensionStatement) {
             case TXT -> writer.saveCheckFileTXT();
             case PDF -> writer.saveStatementPDF();
@@ -96,11 +122,64 @@ public class StatementByAccount {
         }
     }
 
+    protected Timestamp selectPeriodMoneyStatement() {
+        while (true) {
+            Timestamp selectDate = Timestamp.valueOf(LocalDateTime.of(1970, 1,1,0, 0));
+            Scanner in = new Scanner(System.in);
+            System.out.print("Введите дату в формате yyyy-mm-dd или 0 для получения за весь период:");
+            try {
+                String strDateIn = in.next();
+                if (Objects.equals(strDateIn, "0")) {return selectDate;}
+                String[] strDate = strDateIn.split("-");
+                return Timestamp.valueOf(LocalDateTime.of(Integer.parseInt(strDate[0]), Integer.parseInt(strDate[1]),Integer.parseInt(strDate[2]),0, 0));
+            } catch (Exception e) {
+                System.out.println("Пожалуйста, введите корректное число или 0 для получения за весь период");
+            }
+        }
+    }
+
     protected String createStatementString() {
+        startDate = getLimitForStatement(periodStatement);
+
+        StringBuilder stringBuilder = getHeaderStatement(headerRow);
+        stringBuilder.append(headerStatement);
+
+        for (Transaction transaction: getTransactionsByUserId(accountId)) {
+            if (transaction.getTimeTransaction().compareTo(startDate) < 0) {
+                break;
+            }
+            stringBuilder.append(getRowInStatement(transaction, accountId));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    protected String createStatementStringForSumOperation() {
+        startDate = selectPeriodMoneyStatement();
+
+        StringBuilder stringBuilder = getHeaderStatement(headerRowMoneyStatement + "\n");
+
+        String column1 = "Приход";
+        String column2 = "Уход";
+        int space = 5;
+        stringBuilder.append(
+                getRowInHeaderAccountSumStatement(column1, column2, space)
+        );
+
+        stringBuilder.append(
+                getRowInHeaderAccountSumStatement(getInAccountByPeriod(accountId, true, startDate).toString(),
+                        "- " + getInAccountByPeriod(accountId, false, startDate).toString(), space)
+        );
+
+
+        return stringBuilder.toString();
+    }
+
+    protected StringBuilder getHeaderStatement(String header) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(headerRow).append("\n");
+        stringBuilder.append(header).append("\n");
         Bank bank = getBankById(getAccountById(accountId).bankId);
-        stringBuilder.append(" ".repeat((headerRow.length() - bank.getName().length()) / 2 - bank.getName().length() / 2 ) + bank.getName()).append("\n");
+        stringBuilder.append(" ".repeat((header.length() - bank.getName().length()) / 2 - bank.getName().length() / 2 ) + bank.getName()).append("\n");
 
         Account account = getAccountById(accountId);
         Customer customer = getCustomerById(account.customerId);
@@ -110,21 +189,13 @@ public class StatementByAccount {
         stringBuilder.append(getRowInHeader("Валюта", account.currencyType.name()));
         stringBuilder.append(getRowInHeader("Дата открытия",
                 account.timeCreateAccount.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
-        stringBuilder.append(getRowInHeader("Период", "ADD!!!"));
+        stringBuilder.append(getRowInHeader("Период",
+                startDate.toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))));
         stringBuilder.append(getRowInHeader("Дата и время формирования",
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH.mm"))));
         stringBuilder.append(getRowInHeader("Остаток", account.amount + " " + account.currencyType));
-
-        stringBuilder.append(headerStatement);
-        Timestamp localPeriod = getLimitForStatement(periodStatement);
-        for (Transaction transaction: getTransactionsByUserId(account.id)) {
-            if (transaction.getTimeTransaction().compareTo(localPeriod) < 0) {
-                break;
-            }
-            stringBuilder.append(getRowInStatement(transaction, account));
-        }
-
-        return stringBuilder.toString();
+        return stringBuilder;
     }
 
     protected String getRowInHeader(String title, String content) {
@@ -132,7 +203,13 @@ public class StatementByAccount {
                 " ".repeat((headerRow.length() - headerText.length())/2- content.length()) + content+ "\n";
     }
 
-    protected String getRowInStatement(Transaction transaction, Account account) {
+    protected String getRowInHeaderAccountSumStatement(String column1, String column2, int space) {
+        return  " ".repeat(headerRowMoneyStatement.length()/2 - space - column1.length()) +
+                column1 + " ".repeat(space) + "|" + " ".repeat(space) +  column2 + "\n";
+    }
+
+    protected String getRowInStatement(Transaction transaction, Integer accountId) {
+        Account account = getAccountById(accountId);
         String date = transaction.getTimeTransaction().toLocalDateTime()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         String description = transaction.getType().getType() + (
@@ -168,10 +245,12 @@ public class StatementByAccount {
                 return Timestamp.valueOf(LocalDate.now().getYear() +"-01-01" + " 00:00:00");
             }
             default -> {
-                return Timestamp.valueOf(LocalDateTime.MAX);
+                return Timestamp.valueOf(LocalDateTime.of(1970, 1,1,0, 0));
             }
         }
     }
+
+
 
 
 }

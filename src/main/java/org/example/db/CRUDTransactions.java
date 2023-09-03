@@ -7,8 +7,12 @@ import org.example.pojo.Account;
 import org.example.pojo.Transaction;
 import org.example.pojo.TypeTransaction;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,6 +24,8 @@ public class CRUDTransactions extends DBConnector {
     protected static String formatQueryForGetTransactionsByAccountId = "SELECT id FROM test.transactions WHERE account_id_from = %s or account_id_to = %s order by time_transaction desc;";
 
     protected static String formatQueryForAddTransaction = "INSERT INTO test.transactions (account_id_from, account_id_to, transaction_type, sum_operation) VALUES (%s, %s, '%s', %s) RETURNING id";
+    protected static String formatQueryForSumOperationsIn = "SELECT sum(sum_operation) FROM test.transactions where ((transaction_type='TRANSFER' and account_id_to=%s) or (transaction_type='CASH_IN' and account_id_from=%s)) and time_transaction > '%s';";
+    protected static String formatQueryForSumOperationsOut = "SELECT sum(sum_operation) FROM test.transactions where (transaction_type='TRANSFER' and account_id_from=%s) or (transaction_type='CASH_OUT' and account_id_from=%s) and time_transaction > '%s';";
 
     public static synchronized List<Transaction> getTransactionsByUserId(Integer accountId) {
         List<Integer> ids = getTransactionsIdByAccountId(accountId);
@@ -91,5 +97,24 @@ public class CRUDTransactions extends DBConnector {
         log.info("ID transaction for return - " + idAddedTransaction);
         closeDbConnection();
         return idAddedTransaction;
+    }
+
+    @SneakyThrows
+    public static synchronized BigDecimal getInAccountByPeriod(Integer accountId, boolean isIn, Timestamp limit) {
+
+        Statement statement = getStatementPostgres();
+        String query = String.format(isIn ? formatQueryForSumOperationsIn : formatQueryForSumOperationsOut, accountId, accountId, limit);
+        ResultSet resultSet = getResultSetBySQLQuery(statement, query);
+        BigDecimal sum = new BigDecimal(0);
+
+        if (resultSet == null) {return sum;}
+        if (resultSet.next()) {
+            try {
+                sum = resultSet.getBigDecimal(1).setScale(2, RoundingMode.HALF_UP);;
+            } catch (NullPointerException e) {
+                sum = new BigDecimal(0);
+            }
+        }
+        return sum;
     }
 }

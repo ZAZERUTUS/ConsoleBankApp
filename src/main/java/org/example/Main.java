@@ -29,6 +29,7 @@ public class Main {
                             "доступны PDF и TXT при вводе любого другого значения будут сформированы обе выписки: ");
                     new StatementByAccount(ExtensionStatement.getTypeByValue(in.next())).saveStatement();
                 }
+                case 4 -> new StatementByAccount(ExtensionStatement.PDF).saveMoneyStatement();
                 default -> verifyExitFromApp();
             }
 
@@ -44,6 +45,7 @@ public class Main {
                     "1 - Получение информации о пользователях и счетах\n" +
                     "2 - Совершение операций со счетами\n" +
                     "3 - Получение выписки по счёту\n" +
+                    "4 - Получение money statement по счёту\n" +
                     "0 - выход\n" +
                     "Введите номер действия:");
             try {
